@@ -21,7 +21,7 @@ This project was also a way for me to practice the full ML workflow end-to-end: 
      2. Save it in this folder as `screenshot.png`.
      3. The line below will then display it automatically on GitHub. -->
 
-![IPL Score Predictor Screenshot](screenshot.png)
+![IPL Score Predictor Screenshot]()
 
 ---
 
@@ -74,7 +74,7 @@ To run it locally:
 
 ```bash
 # 1. Clone the repository
-git clone <your-repo-url>
+git clone <https://github.com/nagendragouda390-lgtm/Cricket-score-predictor-ipl/>
 cd ipl-score-predictor
 
 # 2. Install dependencies
