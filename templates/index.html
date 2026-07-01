@@ -70,6 +70,7 @@
 
         <div class="dial" id="dial-over" data-min="0" data-max="19" data-value="0">
           <svg class="dial-svg" viewBox="0 0 120 120">
+            <circle class="dial-hitarea" cx="60" cy="60" r="60"></circle>
             <circle class="dial-track" cx="60" cy="60" r="50"></circle>
             <circle class="dial-progress" id="dial-over-progress" cx="60" cy="60" r="50"></circle>
             <circle class="dial-handle" id="dial-over-handle" cx="60" cy="10" r="8"></circle>
@@ -82,6 +83,7 @@
 
         <div class="dial" id="dial-ball" data-min="0" data-max="5" data-value="0">
           <svg class="dial-svg" viewBox="0 0 120 120">
+            <circle class="dial-hitarea" cx="60" cy="60" r="60"></circle>
             <circle class="dial-track" cx="60" cy="60" r="50"></circle>
             <circle class="dial-progress teal" id="dial-ball-progress" cx="60" cy="60" r="50"></circle>
             <circle class="dial-handle teal" id="dial-ball-handle" cx="60" cy="10" r="8"></circle>
@@ -127,7 +129,9 @@
     const max = parseInt(root.dataset.max, 10);
     let value = parseInt(root.dataset.value, 10) || min;
 
+    progress.setAttribute('fill', 'none');
     progress.style.strokeDasharray = CIRCUMFERENCE;
+    progress.style.strokeDashoffset = CIRCUMFERENCE;
 
     function angleForValue(v){
       // 0 to 360 degrees mapped across min..max, starting at top (12 o'clock)
@@ -170,26 +174,30 @@
     function pointerDown(e){
       dragging = true;
       root.classList.add('dragging');
-      pointerMove(e);
+      svg.setPointerCapture(e.pointerId);
+      value = valueFromPointer(e.clientX, e.clientY);
+      render();
       e.preventDefault();
     }
     function pointerMove(e){
       if (!dragging) return;
-      const point = e.touches ? e.touches[0] : e;
-      value = valueFromPointer(point.clientX, point.clientY);
+      value = valueFromPointer(e.clientX, e.clientY);
       render();
+      e.preventDefault();
     }
-    function pointerUp(){
+    function pointerUp(e){
       dragging = false;
       root.classList.remove('dragging');
+      if (svg.hasPointerCapture && svg.hasPointerCapture(e.pointerId)) {
+        svg.releasePointerCapture(e.pointerId);
+      }
     }
 
-    svg.addEventListener('mousedown', pointerDown);
-    svg.addEventListener('touchstart', pointerDown, {passive:false});
-    window.addEventListener('mousemove', pointerMove);
-    window.addEventListener('touchmove', pointerMove, {passive:false});
-    window.addEventListener('mouseup', pointerUp);
-    window.addEventListener('touchend', pointerUp);
+    svg.style.touchAction = 'none';
+    svg.addEventListener('pointerdown', pointerDown);
+    svg.addEventListener('pointermove', pointerMove);
+    svg.addEventListener('pointerup', pointerUp);
+    svg.addEventListener('pointercancel', pointerUp);
 
     // keyboard accessibility
     svg.setAttribute('tabindex', '0');
