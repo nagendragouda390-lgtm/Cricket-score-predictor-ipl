@@ -10,7 +10,6 @@ model = joblib.load("final_score_predictor3.pkl")
 team_map = {
     "Rajasthan Royals":1,
     "Royal Challengers Bengaluru":0.9,
-    "Royal Challengers Bangalore":0.9,
     "Gujarat Titans":0.8,
     "Punjab Kings":0.7,
     "Mumbai Indians":0.6,
