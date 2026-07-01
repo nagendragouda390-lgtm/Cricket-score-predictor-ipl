@@ -21,7 +21,7 @@ This project was also a way for me to practice the full ML workflow end-to-end: 
      2. Save it in this folder as `screenshot.png`.
      3. The line below will then display it automatically on GitHub. -->
 
-![IPL Score Predictor Screenshot]()
+![IPL Score Predictor Screenshot](Screenshot_20260701-143447.png)
 
 ---
 
