@@ -325,6 +325,11 @@ input[type="number"]::-webkit-outer-spin-button{
   stroke-width:8;
 }
 
+.dial-hitarea{
+  fill: rgba(0,0,0,0.001); /* effectively invisible but still paints, so it receives pointer events */
+  stroke: none;
+}
+
 .dial-progress{
   fill:none;
   stroke: var(--amber);
