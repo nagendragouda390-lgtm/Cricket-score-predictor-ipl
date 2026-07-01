@@ -53,14 +53,30 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    batting_team = team_map[request.form["batting_team"]]
-    bowling_team = team_map[request.form["bowling_team"]]
-    city = city_map[request.form["city"]]
+    try:
+        batting_team = team_map[request.form["batting_team"]]
+        bowling_team = team_map[request.form["bowling_team"]]
+        city = city_map[request.form["city"]]
+
+        curr_run = float(request.form["curr_run"])
+        ball_number = float(request.form["balls"])
+        curr_wick = float(request.form["wicket"])
+    except (KeyError, ValueError):
+        return render_template(
+            "index.html",
+            teams=team_map.keys(),
+            cities=city_map.keys(),
+            error="Something in the form was missing or invalid. Please check your inputs and try again."
+        )
 
 
-    curr_run = float(request.form["curr_run"])
-    ball_number = float(request.form["balls"])
-    curr_wick = float(request.form["wicket"])
+    if ball_number <= 0:
+        return render_template(
+            "index.html",
+            teams=team_map.keys(),
+            cities=city_map.keys(),
+            error="Please bowl at least 1 ball (set the Overs/Ball dial) before predicting."
+        )
 
 
     cr = curr_run / ball_number
