@@ -17,6 +17,10 @@
   <h1>First Innings Score Predictor</h1>
   <p class="subtitle">Enter the current match state and get a projected final score.</p>
 
+  {% if error %}
+  <div class="error-banner">{{ error }}</div>
+  {% endif %}
+
   <form action="/predict" method="POST">
 
     <div class="row-2">
