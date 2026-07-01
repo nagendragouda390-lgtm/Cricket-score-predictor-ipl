@@ -1,89 +1,78 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IPL Score Predictor</title>
 <link rel="stylesheet" href="/static/style.css">
 </head>
 
-
 <body>
+<div class="grid-overlay"></div>
 
 <div class="box">
 
-<h1>IPL First Innings Score Predictor</h1>
+  <span class="live-badge"><span class="live-dot"></span> Live Predictor</span>
 
+  <h1>First Innings Score Predictor</h1>
+  <p class="subtitle">Enter the current match state and get a projected final score.</p>
 
-<form action="/predict" method="POST">
+  <form action="/predict" method="POST">
 
+    <div class="row-2">
+      <div class="field">
+        <label for="batting_team">Batting Team</label>
+        <select name="batting_team" id="batting_team">
+          {% for team in teams %}
+          <option>{{ team }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
-<label>Batting Team</label>
+      <div class="field">
+        <label for="bowling_team">Bowling Team</label>
+        <select name="bowling_team" id="bowling_team">
+          {% for team in teams %}
+          <option>{{ team }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
 
-<select name="batting_team">
+    <div class="field">
+      <label for="city">Venue City</label>
+      <select name="city" id="city">
+        {% for city in cities %}
+        <option>{{ city }}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-{% for team in teams %}
+    <div class="row-3">
+      <div class="field">
+        <label for="curr_run">Runs</label>
+        <input type="number" name="curr_run" id="curr_run" placeholder="0" required>
+      </div>
 
-<option>{{team}}</option>
+      <div class="field">
+        <label for="balls">Balls</label>
+        <input type="number" name="balls" id="balls" placeholder="0" required>
+      </div>
 
-{% endfor %}
+      <div class="field">
+        <label for="wicket">Wickets</label>
+        <input type="number" name="wicket" id="wicket" placeholder="0" required>
+      </div>
+    </div>
 
-</select>
+    <button type="submit">
+      Predict Score
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
 
-
-
-<label>Bowling Team</label>
-
-<select name="bowling_team">
-
-{% for team in teams %}
-
-<option>{{team}}</option>
-
-{% endfor %}
-
-</select>
-
-
-
-
-<label>City</label>
-
-<select name="city">
-
-{% for city in cities %}
-
-<option>{{city}}</option>
-
-{% endfor %}
-
-</select>
-
-
-
-<label>Current Score</label>
-
-<input type="number" name="curr_run" required>
-
-
-<label>Current Balls</label>
-
-<input type="number" name="balls" required>
-
-
-<label>Current Wickets</label>
-
-<input type="number" name="wicket" required>
-
-
-<button type="submit">
-Predict
-</button>
-
-
-</form>
+  </form>
 
 </div>
 
-
 </body>
-  </html>
+</html>
