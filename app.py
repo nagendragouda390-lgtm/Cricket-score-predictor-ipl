@@ -54,8 +54,19 @@ def home():
 def predict():
 
     try:
-        batting_team = team_map[request.form["batting_team"]]
-        bowling_team = team_map[request.form["bowling_team"]]
+        batting_name = request.form["batting_team"]
+        bowling_name = request.form["bowling_team"]
+        if batting_name == bowling_name:
+            return render_template(
+                   "index.html",
+                   teams=team_map.keys(),
+                   cities=city_map.keys(),
+                   error="Batting team and Bowling team cannot be the same."
+            )
+
+        batting_team = team_map[batting_name]
+        bowling_team = team_map[bowling_name]
+            
         city = city_map[request.form["city"]]
 
         curr_run = float(request.form["curr_run"])
