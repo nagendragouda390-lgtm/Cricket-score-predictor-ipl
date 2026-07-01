@@ -65,39 +65,25 @@
     </div>
 
     <div class="field">
-      <label>Overs Bowled</label>
-      <div class="dial-row">
+      <label>Balls Bowled</label>
+      <div class="dial-row single">
 
-        <div class="dial" id="dial-over" data-min="0" data-max="19" data-value="0">
+        <div class="dial" id="dial-balls" data-min="0" data-max="120" data-value="0">
           <svg class="dial-svg" viewBox="0 0 120 120">
             <circle class="dial-hitarea" cx="60" cy="60" r="60"></circle>
             <circle class="dial-track" cx="60" cy="60" r="50"></circle>
-            <circle class="dial-progress" id="dial-over-progress" cx="60" cy="60" r="50"></circle>
-            <circle class="dial-handle" id="dial-over-handle" cx="60" cy="10" r="8"></circle>
+            <circle class="dial-progress teal" id="dial-balls-progress" cx="60" cy="60" r="50"></circle>
+            <circle class="dial-handle teal" id="dial-balls-handle" cx="60" cy="10" r="8"></circle>
           </svg>
           <div class="dial-readout">
-            <span class="dial-value" id="dial-over-value">0</span>
-            <span class="dial-unit">overs</span>
-          </div>
-        </div>
-
-        <div class="dial" id="dial-ball" data-min="0" data-max="5" data-value="0">
-          <svg class="dial-svg" viewBox="0 0 120 120">
-            <circle class="dial-hitarea" cx="60" cy="60" r="60"></circle>
-            <circle class="dial-track" cx="60" cy="60" r="50"></circle>
-            <circle class="dial-progress teal" id="dial-ball-progress" cx="60" cy="60" r="50"></circle>
-            <circle class="dial-handle teal" id="dial-ball-handle" cx="60" cy="10" r="8"></circle>
-          </svg>
-          <div class="dial-readout">
-            <span class="dial-value" id="dial-ball-value">0</span>
-            <span class="dial-unit">ball</span>
+            <span class="dial-value" id="dial-balls-value">0</span>
+            <span class="dial-unit">balls</span>
           </div>
         </div>
 
       </div>
       <div class="dial-summary">
-        Balls bowled: <strong id="balls-total">0</strong>
-        <span class="dial-formula">(overs × 6 + ball)</span>
+        <span class="dial-formula">max 120 balls (20 overs)</span>
       </div>
     </div>
 
@@ -220,17 +206,11 @@
     return { get: () => value };
   }
 
-  function updateTotal(){
-    const overs = overDial.get();
-    const ball = ballDial.get();
-    const total = overs * 6 + ball;
-    document.getElementById('balls-total').textContent = total;
-    document.getElementById('balls').value = total;
+  function updateTotal(value){
+    document.getElementById('balls').value = value;
   }
 
-  const overDial = setupDial('dial-over', 'dial-over-progress', 'dial-over-handle', 'dial-over-value', updateTotal);
-  const ballDial = setupDial('dial-ball', 'dial-ball-progress', 'dial-ball-handle', 'dial-ball-value', updateTotal);
-  updateTotal();
+  setupDial('dial-balls', 'dial-balls-progress', 'dial-balls-handle', 'dial-balls-value', updateTotal);
 })();
 </script>
 
