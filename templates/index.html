@@ -48,15 +48,10 @@
       </select>
     </div>
 
-    <div class="row-3">
+    <div class="row-2">
       <div class="field">
         <label for="curr_run">Runs</label>
         <input type="number" name="curr_run" id="curr_run" placeholder="0" required>
-      </div>
-
-      <div class="field">
-        <label for="balls">Balls</label>
-        <input type="number" name="balls" id="balls" placeholder="0" required>
       </div>
 
       <div class="field">
@@ -64,6 +59,43 @@
         <input type="number" name="wicket" id="wicket" placeholder="0" required>
       </div>
     </div>
+
+    <div class="field">
+      <label>Overs Bowled</label>
+      <div class="dial-row">
+
+        <div class="dial" id="dial-over" data-min="0" data-max="19" data-value="0">
+          <svg class="dial-svg" viewBox="0 0 120 120">
+            <circle class="dial-track" cx="60" cy="60" r="50"></circle>
+            <circle class="dial-progress" id="dial-over-progress" cx="60" cy="60" r="50"></circle>
+            <circle class="dial-handle" id="dial-over-handle" cx="60" cy="10" r="8"></circle>
+          </svg>
+          <div class="dial-readout">
+            <span class="dial-value" id="dial-over-value">0</span>
+            <span class="dial-unit">overs</span>
+          </div>
+        </div>
+
+        <div class="dial" id="dial-ball" data-min="0" data-max="5" data-value="0">
+          <svg class="dial-svg" viewBox="0 0 120 120">
+            <circle class="dial-track" cx="60" cy="60" r="50"></circle>
+            <circle class="dial-progress teal" id="dial-ball-progress" cx="60" cy="60" r="50"></circle>
+            <circle class="dial-handle teal" id="dial-ball-handle" cx="60" cy="10" r="8"></circle>
+          </svg>
+          <div class="dial-readout">
+            <span class="dial-value" id="dial-ball-value">0</span>
+            <span class="dial-unit">ball</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="dial-summary">
+        Balls bowled: <strong id="balls-total">0</strong>
+        <span class="dial-formula">(overs × 6 + ball)</span>
+      </div>
+    </div>
+
+    <input type="hidden" name="balls" id="balls" value="0">
 
     <button type="submit">
       Predict Score
@@ -73,6 +105,122 @@
   </form>
 
 </div>
+
+<script>
+(function(){
+  const RADIUS = 50;
+  const CX = 60, CY = 60;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+  function setupDial(rootId, progressId, handleId, valueId, onChange){
+    const root = document.getElementById(rootId);
+    const progress = document.getElementById(progressId);
+    const handle = document.getElementById(handleId);
+    const valueEl = document.getElementById(valueId);
+    const svg = root.querySelector('.dial-svg');
+
+    const min = parseInt(root.dataset.min, 10);
+    const max = parseInt(root.dataset.max, 10);
+    let value = parseInt(root.dataset.value, 10) || min;
+
+    progress.style.strokeDasharray = CIRCUMFERENCE;
+
+    function angleForValue(v){
+      // 0 to 360 degrees mapped across min..max, starting at top (12 o'clock)
+      const frac = (v - min) / (max - min);
+      return frac * 360;
+    }
+
+    function render(){
+      const angleDeg = angleForValue(value);
+      const angleRad = (angleDeg - 90) * (Math.PI / 180);
+      const hx = CX + RADIUS * Math.cos(angleRad);
+      const hy = CY + RADIUS * Math.sin(angleRad);
+      handle.setAttribute('cx', hx.toFixed(2));
+      handle.setAttribute('cy', hy.toFixed(2));
+
+      const frac = angleDeg / 360;
+      const offset = CIRCUMFERENCE * (1 - frac);
+      progress.style.strokeDashoffset = offset;
+
+      valueEl.textContent = value;
+      root.dataset.value = value;
+      onChange(value);
+    }
+
+    function valueFromPointer(clientX, clientY){
+      const rect = svg.getBoundingClientRect();
+      const px = clientX - rect.left - rect.width / 2;
+      const py = clientY - rect.top - rect.height / 2;
+      let angleDeg = Math.atan2(px, -py) * (180 / Math.PI);
+      if (angleDeg < 0) angleDeg += 360;
+      const frac = angleDeg / 360;
+      let v = Math.round(min + frac * (max - min));
+      if (v > max) v = max;
+      if (v < min) v = min;
+      return v;
+    }
+
+    let dragging = false;
+
+    function pointerDown(e){
+      dragging = true;
+      root.classList.add('dragging');
+      pointerMove(e);
+      e.preventDefault();
+    }
+    function pointerMove(e){
+      if (!dragging) return;
+      const point = e.touches ? e.touches[0] : e;
+      value = valueFromPointer(point.clientX, point.clientY);
+      render();
+    }
+    function pointerUp(){
+      dragging = false;
+      root.classList.remove('dragging');
+    }
+
+    svg.addEventListener('mousedown', pointerDown);
+    svg.addEventListener('touchstart', pointerDown, {passive:false});
+    window.addEventListener('mousemove', pointerMove);
+    window.addEventListener('touchmove', pointerMove, {passive:false});
+    window.addEventListener('mouseup', pointerUp);
+    window.addEventListener('touchend', pointerUp);
+
+    // keyboard accessibility
+    svg.setAttribute('tabindex', '0');
+    svg.setAttribute('role', 'slider');
+    svg.setAttribute('aria-valuemin', min);
+    svg.setAttribute('aria-valuemax', max);
+    svg.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowUp' || e.key === 'ArrowRight'){
+        value = Math.min(max, value + 1);
+        render();
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft'){
+        value = Math.max(min, value - 1);
+        render();
+        e.preventDefault();
+      }
+    });
+
+    render();
+    return { get: () => value };
+  }
+
+  function updateTotal(){
+    const overs = overDial.get();
+    const ball = ballDial.get();
+    const total = overs * 6 + ball;
+    document.getElementById('balls-total').textContent = total;
+    document.getElementById('balls').value = total;
+  }
+
+  const overDial = setupDial('dial-over', 'dial-over-progress', 'dial-over-handle', 'dial-over-value', updateTotal);
+  const ballDial = setupDial('dial-ball', 'dial-ball-progress', 'dial-ball-handle', 'dial-ball-value', updateTotal);
+  updateTotal();
+})();
+</script>
 
 </body>
 </html>
