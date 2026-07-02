@@ -4,7 +4,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-model = joblib.load("score_rfc3.pkl")
+model = joblib.load("score_rfc.pkl")
 
 
 team_map = {
