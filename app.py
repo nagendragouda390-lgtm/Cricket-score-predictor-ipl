@@ -72,6 +72,7 @@ def predict():
         curr_run = float(request.form["curr_run"])
         ball_number = float(request.form["balls"])
         curr_wick = float(request.form["wicket"])
+        partnership = float(request.form["partnership"])
     except (KeyError, ValueError):
         return render_template(
             "index.html",
@@ -90,6 +91,8 @@ def predict():
         )
 
 
+    balls_left = 120 - ball_number
+
     cr = curr_run / ball_number
 
 
@@ -98,6 +101,8 @@ def predict():
 
     est_score = cr * 20
 
+    rratr = est_score - curr_run
+
 
     data = np.array([[
         city,
@@ -105,10 +110,13 @@ def predict():
         bowling_team,
         curr_run,
         ball_number,
+        balls_left,
         curr_wick,
         cr,
         rpw,
-        est_score
+        est_score,
+        rratr,
+        partnership
     ]])
 
 
